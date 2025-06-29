@@ -1,26 +1,23 @@
-import { Injectable } from '@nestjs/common';
 import { CreateUserInput } from './dto/create-user.input';
 import { UpdateUserInput } from './dto/update-user.input';
+import { PrismaService } from 'src/prisma/prisma.service';
+import { Injectable } from '@nestjs/common';
+import { hash } from 'argon2';
 
 @Injectable()
 export class UserService {
-  create(createUserInput: CreateUserInput) {
-    return 'This action adds a new user';
-  }
+  constructor(private readonly prismaService: PrismaService) {}
 
-  findAll() {
-    return `This action returns all user`;
-  }
+  async create(createUserInput: CreateUserInput) {
+    const { password, ...user } = createUserInput;
 
-  findOne(id: number) {
-    return `This action returns a #${id} user`;
-  }
+    const hashPass = await hash(password);
 
-  update(id: number, updateUserInput: UpdateUserInput) {
-    return `This action updates a #${id} user`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+    return await this.prismaService.user.create({
+      data: {
+        password: hashPass,
+        ...user,
+      },
+    });
   }
 }
