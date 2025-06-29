@@ -59,4 +59,26 @@ export class AuthService {
       accessToken,
     };
   }
+
+  // validate jwt user
+  async validateJwtUser(userId: number) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        id: userId,
+      },
+    });
+
+    if (!user) {
+      throw new UnauthorizedException('User not found');
+    }
+
+    const currentUser = {
+      id: user.id,
+      email: user.email,
+      name: user.name,
+      bio: user?.bio,
+    };
+
+    return currentUser;
+  }
 }
