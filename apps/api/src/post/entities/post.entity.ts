@@ -16,6 +16,9 @@ export class Post {
   @Field({ nullable: true })
   slug?: string;
 
+  @Field()
+  content: string;
+
   @Field({ nullable: true })
   thumbnail?: string;
 

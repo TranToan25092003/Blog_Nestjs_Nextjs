@@ -35,6 +35,7 @@ type Post {
   id: Int!
   title: String!
   slug: String
+  content: String!
   thumbnail: String
   published: Boolean!
   createdAt: DateTime!
