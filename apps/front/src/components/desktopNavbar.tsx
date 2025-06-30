@@ -23,7 +23,7 @@ const DesktopNavbar = (props: Props) => {
   return (
     <nav
       className={cn(
-        "fixed w-full z-50 text-white top-0 block transition-colors",
+        "hidden fixed w-full z-50 text-white top-0 md:block transition-colors",
         {
           "bg-white text-gray-700 shadow-md": isScrollDown,
         }
