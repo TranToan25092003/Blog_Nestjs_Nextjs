@@ -8,9 +8,33 @@ import { JwtAuthGuard } from 'src/auth/guards/jwt-auth/jwt-auth.guard';
 export class PostResolver {
   constructor(private readonly postService: PostService) {}
 
+  // get all posts
   // @UseGuards(JwtAuthGuard)
   @Query(() => [Post], { name: 'posts' })
-  findAll(@Context() context) {
-    return this.postService.findAll();
+  findAll(
+    @Context() context,
+
+    // arg skip
+    @Args('skip', {
+      nullable: true,
+    })
+    skip?: number,
+
+    // arg rake
+    @Args('take', {
+      nullable: true,
+    })
+    take?: number,
+  ) {
+    return this.postService.findAll({
+      take,
+      skip,
+    });
+  }
+
+  //count posts
+  @Query(() => Int, { name: 'postcount' })
+  count() {
+    return this.postService.count();
   }
 }
