@@ -32,9 +32,23 @@ export class PostResolver {
     });
   }
 
-  //count posts
+  /**
+   * ====================================
+   * count post
+   * ====================================
+   */
   @Query(() => Int, { name: 'postcount' })
   count() {
     return this.postService.count();
+  }
+
+  /**
+   * ====================================
+   * find one post by id
+   * ====================================
+   */
+  @Query(() => Post)
+  getPostById(@Args('id', { type: () => Int }) id: number) {
+    return this.postService.findOne(id);
   }
 }
