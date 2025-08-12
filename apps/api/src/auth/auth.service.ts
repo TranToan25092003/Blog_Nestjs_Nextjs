@@ -5,6 +5,7 @@ import { verify } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { AuthJwtPayload } from './types/auth-jwtPayload';
 import { User } from '@prisma/client';
+import { CreateUserInput } from 'src/user/dto/create-user.input';
 
 @Injectable()
 export class AuthService {
@@ -16,7 +17,11 @@ export class AuthService {
     private readonly jwt: JwtService,
   ) {}
 
-  //   check user account
+  /**
+   * ====================================
+   *  check user account
+   * ====================================
+   */
   async validateLocalUser({ email, password }: SignInInput) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -48,7 +53,11 @@ export class AuthService {
     return { accessToken };
   }
 
-  //   login
+  /**
+   * ====================================
+   * Login
+   * ====================================
+   */
   async login(user: User) {
     const { accessToken } = await this.generateToken(user.id);
 
@@ -60,7 +69,11 @@ export class AuthService {
     };
   }
 
-  // validate jwt user
+  /**
+   * ====================================
+   * validate jwt user
+   * ====================================
+   */
   async validateJwtUser(userId: number) {
     const user = await this.prisma.user.findUnique({
       where: {
@@ -80,5 +93,32 @@ export class AuthService {
     };
 
     return currentUser;
+  }
+
+  /**
+   * ====================================
+   * validate google user
+   * ====================================
+   */
+  async validateGoogleUser(googleUser: CreateUserInput) {
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: googleUser.email,
+      },
+    });
+
+    if (user) {
+      const { password, ...authUser } = user;
+      return authUser;
+    }
+
+    const dbUser = await this.prisma.user.create({
+      data: {
+        ...googleUser,
+      },
+    });
+
+    const { password, ...authUser } = dbUser;
+    return authUser;
   }
 }

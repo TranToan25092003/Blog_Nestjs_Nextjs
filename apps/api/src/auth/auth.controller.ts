@@ -1,0 +1,30 @@
+import { Controller, Get, Request, Res, UseGuards } from '@nestjs/common';
+import { GoogleAuthGuard } from './guards/google-auth/google-auth.guard';
+import { AuthService } from './auth.service';
+import { Response } from 'express';
+import { JwtAuthGuard } from './guards/jwt-auth/jwt-auth.guard';
+
+@Controller('auth')
+export class AuthController {
+  constructor(private readonly authService: AuthService) {}
+
+  @Get('google/login')
+  @UseGuards(GoogleAuthGuard)
+  googleLogin() {}
+
+  @Get('google/callback')
+  @UseGuards(GoogleAuthGuard)
+  async googleCallback(@Request() req, @Res() res: Response) {
+    const userData = await this.authService.login(req.user);
+
+    res.redirect(
+      `http://localhost:3000/api/auth/google/callback?userId=${userData.id}&name=${userData.name}&avatar=${userData.avatar}&accessToken=${userData.accessToken}`,
+    );
+  }
+
+  @Get('verify-token')
+  @UseGuards(JwtAuthGuard)
+  verify() {
+    return 'oke';
+  }
+}
